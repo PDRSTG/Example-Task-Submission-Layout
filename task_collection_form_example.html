@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Example Project Task Collection</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0f1419;
+      --bg-secondary: #1a1f2e;
+      --bg-tertiary: #252d3d;
+      --bg-card: #1e2433;
+      --accent-blue: #3b82f6;
+      --accent-blue-hover: #2563eb;
+      --accent-red: #ef4444;
+      --accent-red-light: #fecaca;
+      --accent-red-bg: #451a1a;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --border-color: #334155;
+      --success-green: #22c55e;
+      --warning-amber: #f59e0b;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+      border-bottom: 1px solid var(--border-color);
+      padding: 1.25rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .timer-container {
+      position: fixed;
+      bottom: 220px;
+      right: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: var(--bg-primary);
+      padding: 0.625rem 1rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      z-index: 95;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .timer-icon {
+      width: 20px;
+      height: 20px;
+      color: var(--warning-amber);
+    }
+
+    .timer-display {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--warning-amber);
+      letter-spacing: 0.05em;
+    }
+
+    /* Main Container */
+    .main-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem;
+      padding-bottom: 320px;
+    }
+
+    /* Instructions Panel */
+    .instructions-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+
+    .instructions-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.25rem;
+      background: linear-gradient(135deg, #1e3a5f 0%, #1a2744 100%);
+      border-bottom: 1px solid var(--border-color);
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.2s ease;
+    }
+
+    .instructions-header:hover {
+      background: linear-gradient(135deg, #234b77 0%, #1e2d52 100%);
+    }
+
+    .instructions-header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .instructions-header h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .instructions-badge {
+      background: var(--accent-blue);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .instructions-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .icon-btn {
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: rgba(255,255,255,0.1);
+      border-radius: 6px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .icon-btn:hover {
+      background: rgba(255,255,255,0.2);
+      color: var(--text-primary);
+    }
+
+    .icon-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .chevron-icon {
+      transition: transform 0.3s ease;
+    }
+
+    .instructions-panel.collapsed .chevron-icon {
+      transform: rotate(-90deg);
+    }
+
+    .instructions-content {
+      padding: 1.25rem;
+      max-height: 400px;
+      overflow-y: auto;
+      transition: max-height 0.3s ease, padding 0.3s ease, opacity 0.3s ease;
+    }
+
+    .instructions-panel.collapsed .instructions-content {
+      max-height: 0;
+      padding: 0 1.25rem;
+      opacity: 0;
+      overflow: hidden;
+    }
+
+    .instructions-content p {
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+      font-size: 0.925rem;
+    }
+
+    .instructions-content ul {
+      list-style: none;
+      margin-bottom: 1rem;
+    }
+
+    .instructions-content li {
+      position: relative;
+      padding-left: 1.5rem;
+      margin-bottom: 0.5rem;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .instructions-content li::before {
+      content: "→";
+      position: absolute;
+      left: 0;
+      color: var(--accent-blue);
+      font-weight: 600;
+    }
+
+    .faq-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--accent-blue);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+      transition: color 0.2s ease;
+    }
+
+    .faq-link:hover {
+      color: #60a5fa;
+      text-decoration: underline;
+    }
+
+    .faq-link svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    /* Form Section */
+    .form-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.75rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group:last-of-type {
+      margin-bottom: 0;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    label .required {
+      color: var(--accent-red);
+      margin-left: 2px;
+    }
+
+    /* Difficulty Selector - Simple Radio */
+    .difficulty-selector {
+      display: flex;
+      gap: 2rem;
+      padding: 0.5rem 0;
+    }
+
+    .difficulty-option {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .difficulty-option input[type="radio"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent-blue);
+      cursor: pointer;
+    }
+
+    .difficulty-option label {
+      display: inline;
+      font-weight: 500;
+      font-size: 0.95rem;
+      color: var(--text-primary);
+      cursor: pointer;
+      margin-bottom: 0;
+    }
+
+    /* Text Inputs */
+    input[type="text"],
+    input[type="url"],
+    input[type="date"],
+    textarea {
+      width: 100%;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.875rem 1rem;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 0.925rem;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input[type="text"]:focus,
+    input[type="url"]:focus,
+    input[type="date"]:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: var(--text-muted);
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    textarea.prompt-input {
+      min-height: 100px;
+    }
+
+    textarea.answer-input {
+      min-height: 180px;
+    }
+
+    /* URL Grid */
+    .url-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    @media (max-width: 600px) {
+      .url-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* File Upload */
+    .file-upload-area {
+      border: 2px dashed var(--border-color);
+      border-radius: 10px;
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: var(--bg-primary);
+    }
+
+    .file-upload-area:hover {
+      border-color: var(--accent-blue);
+      background: rgba(59, 130, 246, 0.05);
+    }
+
+    .file-upload-area.dragover {
+      border-color: var(--accent-blue);
+      background: rgba(59, 130, 246, 0.1);
+    }
+
+    .upload-icon {
+      width: 48px;
+      height: 48px;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    .upload-text {
+      color: var(--text-secondary);
+      font-size: 0.925rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .upload-hint {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+
+    .file-input {
+      display: none;
+    }
+
+    .uploaded-file {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      border-radius: 8px;
+      margin-top: 1rem;
+    }
+
+    .uploaded-file svg {
+      width: 20px;
+      height: 20px;
+      color: var(--success-green);
+    }
+
+    .uploaded-file span {
+      flex: 1;
+      font-size: 0.875rem;
+      color: var(--text-primary);
+    }
+
+    .remove-file {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+      transition: color 0.2s ease;
+    }
+
+    .remove-file:hover {
+      color: var(--accent-red);
+    }
+
+    /* Action Buttons */
+    .form-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .btn {
+      padding: 0.875rem 1.75rem;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.925rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-skip {
+      background: var(--accent-red-bg);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: var(--accent-red-light);
+    }
+
+    .btn-skip:hover {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: var(--accent-red);
+    }
+
+    .btn-submit {
+      background: var(--accent-blue);
+      border: none;
+      color: white;
+    }
+
+    .btn-submit:hover {
+      background: var(--accent-blue-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
+    }
+
+    .btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Chat Panel */
+    .chat-panel {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border-color);
+      z-index: 90;
+    }
+
+    .chat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.875rem 2rem;
+      background: var(--bg-tertiary);
+      border-bottom: 1px solid var(--border-color);
+      cursor: pointer;
+    }
+
+    .chat-header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .chat-header h3 {
+      font-size: 0.925rem;
+      font-weight: 600;
+    }
+
+    .online-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-size: 0.75rem;
+      color: var(--success-green);
+    }
+
+    .online-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--success-green);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .chat-body {
+      height: 200px;
+      overflow-y: auto;
+      padding: 1rem 2rem;
+    }
+
+    .chat-messages {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .chat-message {
+      max-width: 80%;
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+      font-size: 0.875rem;
+      line-height: 1.5;
+    }
+
+    .chat-message.system {
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+
+    .chat-message.user {
+      background: var(--accent-blue);
+      color: white;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+
+    .chat-input-area {
+      display: flex;
+      gap: 0.75rem;
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border-color);
+      background: var(--bg-primary);
+    }
+
+    .chat-input {
+      flex: 1;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 24px;
+      padding: 0.75rem 1.25rem;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 0.875rem;
+    }
+
+    .chat-input:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+    }
+
+    .chat-send-btn {
+      width: 44px;
+      height: 44px;
+      background: var(--accent-blue);
+      border: none;
+      border-radius: 50%;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .chat-send-btn:hover {
+      background: var(--accent-blue-hover);
+      transform: scale(1.05);
+    }
+
+    .chat-send-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Collapsed Chat */
+    .chat-panel.collapsed .chat-body,
+    .chat-panel.collapsed .chat-input-area {
+      display: none;
+    }
+
+    .chat-toggle-icon {
+      transition: transform 0.3s ease;
+    }
+
+    .chat-panel.collapsed .chat-toggle-icon {
+      transform: rotate(180deg);
+    }
+
+    /* Scrollbar Styling */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-primary);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <h1>Example Project Task Collection</h1>
+    </div>
+  </header>
+
+  <!-- Timer (bottom right) -->
+  <div class="timer-container">
+    <svg class="timer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="10"/>
+      <polyline points="12 6 12 12 16 14"/>
+    </svg>
+    <span class="timer-display" id="timer">1:30:00</span>
+  </div>
+
+  <!-- Main Content -->
+  <main class="main-container">
+    <!-- Instructions Panel -->
+    <div class="instructions-panel" id="instructionsPanel">
+      <div class="instructions-header" onclick="toggleInstructions()">
+        <div class="instructions-header-left">
+          <h2>📋 Task Instructions</h2>
+          <span class="instructions-badge">Required Reading</span>
+        </div>
+        <div class="instructions-actions">
+          <button class="icon-btn" onclick="event.stopPropagation(); openInstructionsPopout()" title="Open in new tab">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+              <polyline points="15 3 21 3 21 9"/>
+              <line x1="10" y1="14" x2="21" y2="3"/>
+            </svg>
+          </button>
+          <svg class="chevron-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 12 15 18 9"/>
+          </svg>
+        </div>
+      </div>
+      <div class="instructions-content">
+        <p><strong>Instructions for Project Nue.</strong> Your task is to create high-quality question/answer pairs based on publicly available SEC 10-K and 10-Q filings.</p>
+        
+        <ul>
+          <li>Use only filings from <strong>October 2023 or more recent</strong></li>
+          <li>Search for filings at <a href="https://www.sec.gov/edgar/searchedgar/companysearch" target="_blank" style="color: var(--accent-blue);">SEC EDGAR</a></li>
+          <li>No personally identifiable information (PII) in submissions</li>
+          <li>Questions must ask for factual information supported by the document</li>
+          <li>Answers should be complete enough for reviewers to judge AI responses</li>
+          <li>Include specific page/section references in your answer</li>
+        </ul>
+
+        <p><strong>To save the PDF:</strong> Click "Menu" → "Open as HTML" (record this link) → "Print" → "Save as PDF"</p>
+
+        <a href="#" class="faq-link" onclick="event.preventDefault(); alert('Instructions page would open here');">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+          View Full FAQ & Guidelines
+        </a>
+      </div>
+    </div>
+
+    <!-- Form Section -->
+    <form class="form-section" onsubmit="event.preventDefault(); handleSubmit();">
+      
+      <!-- Prompt Difficulty Type -->
+      <div class="form-group">
+        <label>Prompt Difficulty Type <span class="required">*</span></label>
+        <div class="difficulty-selector">
+          <div class="difficulty-option">
+            <input type="radio" id="catA" name="difficulty" value="A" required>
+            <label for="catA">A — Simple (Single section)</label>
+          </div>
+          <div class="difficulty-option">
+            <input type="radio" id="catB" name="difficulty" value="B">
+            <label for="catB">B — Complex (Multi-section)</label>
+          </div>
+          <div class="difficulty-option">
+            <input type="radio" id="catC" name="difficulty" value="C">
+            <label for="catC">C — Advanced (Multi-document)</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Prompt Input -->
+      <div class="form-group">
+        <label for="prompt">Prompt / Question <span class="required">*</span></label>
+        <textarea 
+          id="prompt" 
+          class="prompt-input" 
+          placeholder="Enter your question about the SEC filing(s). Be specific and clear..."
+          required
+        ></textarea>
+      </div>
+
+      <!-- Answer Input -->
+      <div class="form-group">
+        <label for="answer">Answer <span class="required">*</span></label>
+        <textarea 
+          id="answer" 
+          class="answer-input" 
+          placeholder="Provide the complete answer with supporting facts. Include specific page/section references. This should be detailed enough for reviewers to evaluate AI-generated responses without reading the source documents..."
+          required
+        ></textarea>
+      </div>
+
+      <!-- URL Inputs -->
+      <div class="form-group">
+        <div class="url-grid">
+          <div>
+            <label for="secUrl">SEC Page URL <span class="required">*</span></label>
+            <input 
+              type="url" 
+              id="secUrl" 
+              placeholder="https://www.sec.gov/cgi-bin/browse-edgar?action=..."
+              required
+            >
+          </div>
+          <div>
+            <label for="htmlLink">HTML Link <span class="required">*</span></label>
+            <input 
+              type="url" 
+              id="htmlLink" 
+              placeholder="https://www.sec.gov/Archives/edgar/data/..."
+              required
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- Filing Date -->
+      <div class="form-group">
+        <label for="filingDate">Filing Publish Date <span class="required">*</span></label>
+        <input 
+          type="date" 
+          id="filingDate" 
+          required
+          min="2023-10-01"
+        >
+      </div>
+
+      <!-- File Upload -->
+      <div class="form-group">
+        <label>Upload Your Document <span class="required">*</span></label>
+        <div 
+          class="file-upload-area" 
+          id="uploadArea"
+          onclick="document.getElementById('fileInput').click()"
+          ondragover="handleDragOver(event)"
+          ondragleave="handleDragLeave(event)"
+          ondrop="handleDrop(event)"
+        >
+          <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="12" y1="18" x2="12" y2="12"/>
+            <line x1="9" y1="15" x2="12" y2="12"/>
+            <line x1="15" y1="15" x2="12" y2="12"/>
+          </svg>
+          <p class="upload-text">Upload your PDF</p>
+          <p class="upload-hint">Click to browse or drag and drop your file here</p>
+        </div>
+        <input type="file" id="fileInput" class="file-input" accept=".pdf" onchange="handleFileSelect(event)">
+        <div id="uploadedFileDisplay"></div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="form-actions">
+        <button type="button" class="btn btn-skip" onclick="handleSkip()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+          Skip Task
+        </button>
+        <button type="submit" class="btn btn-submit">
+          Submit Task
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </button>
+      </div>
+    </form>
+  </main>
+
+  <!-- Chat Panel -->
+  <div class="chat-panel" id="chatPanel">
+    <div class="chat-header" onclick="toggleChat()">
+      <div class="chat-header-left">
+        <h3>💬Chat</h3>
+        <span class="online-indicator">
+          <span class="online-dot"></span>
+          Support Online
+        </span>
+      </div>
+      <svg class="chat-toggle-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="18 15 12 9 6 15"/>
+      </svg>
+    </div>
+    <div class="chat-body">
+      <div class="chat-messages" id="chatMessages">
+        <div class="chat-message system">
+          Leave any questions about the task here. A support team member will respond shortly.
+        </div>
+      </div>
+    </div>
+    <div class="chat-input-area">
+      <input 
+        type="text" 
+        class="chat-input" 
+        id="chatInput" 
+        placeholder="Type your question here..."
+        onkeypress="if(event.key === 'Enter') sendMessage()"
+      >
+      <button class="chat-send-btn" onclick="sendMessage()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="22" y1="2" x2="11" y2="13"/>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Timer functionality
+    let timeRemaining = 90 * 60; // 1 hour 30 minutes in seconds
+
+    function updateTimer() {
+      const hours = Math.floor(timeRemaining / 3600);
+      const minutes = Math.floor((timeRemaining % 3600) / 60);
+      const seconds = timeRemaining % 60;
+      
+      document.getElementById('timer').textContent = 
+        `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      
+      if (timeRemaining > 0) {
+        timeRemaining--;
+        setTimeout(updateTimer, 1000);
+      } else {
+        alert('Time is up! Your task will be auto-submitted.');
+      }
+    }
+    updateTimer();
+
+    // Instructions panel toggle
+    function toggleInstructions() {
+      document.getElementById('instructionsPanel').classList.toggle('collapsed');
+    }
+
+    function openInstructionsPopout() {
+      const content = document.querySelector('.instructions-content').innerHTML;
+      const newWindow = window.open('', '_blank', 'width=600,height=500');
+      newWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Task Instructions</title>
+          <style>
+            body { 
+              font-family: 'DM Sans', -apple-system, sans-serif; 
+              padding: 2rem; 
+              line-height: 1.6;
+              background: #1a1f2e;
+              color: #f1f5f9;
+            }
+            a { color: #3b82f6; }
+            ul { list-style: none; padding: 0; }
+            li { padding-left: 1.5rem; position: relative; margin-bottom: 0.5rem; }
+            li::before { content: "→"; position: absolute; left: 0; color: #3b82f6; }
+          </style>
+        </head>
+        <body>
+          <h1>📋 Task Instructions</h1>
+          ${content}
+        </body>
+        </html>
+      `);
+    }
+
+    // File upload handling
+    function handleDragOver(e) {
+      e.preventDefault();
+      document.getElementById('uploadArea').classList.add('dragover');
+    }
+
+    function handleDragLeave(e) {
+      e.preventDefault();
+      document.getElementById('uploadArea').classList.remove('dragover');
+    }
+
+    function handleDrop(e) {
+      e.preventDefault();
+      document.getElementById('uploadArea').classList.remove('dragover');
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        displayUploadedFile(files[0]);
+      }
+    }
+
+    function handleFileSelect(e) {
+      const files = e.target.files;
+      if (files.length > 0) {
+        displayUploadedFile(files[0]);
+      }
+    }
+
+    function displayUploadedFile(file) {
+      const display = document.getElementById('uploadedFileDisplay');
+      display.innerHTML = `
+        <div class="uploaded-file">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          <span>${file.name}</span>
+          <button class="remove-file" onclick="removeFile()" title="Remove file">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+      `;
+    }
+
+    function removeFile() {
+      document.getElementById('fileInput').value = '';
+      document.getElementById('uploadedFileDisplay').innerHTML = '';
+    }
+
+    // Chat functionality
+    function toggleChat() {
+      document.getElementById('chatPanel').classList.toggle('collapsed');
+    }
+
+    function sendMessage() {
+      const input = document.getElementById('chatInput');
+      const message = input.value.trim();
+      
+      if (message) {
+        const messagesContainer = document.getElementById('chatMessages');
+        messagesContainer.innerHTML += `
+          <div class="chat-message user">${message}</div>
+        `;
+        input.value = '';
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        
+        // Simulate response
+        setTimeout(() => {
+          messagesContainer.innerHTML += `
+            <div class="chat-message system">Thanks for your question! A support team member will respond shortly. Average response time: ~5 minutes.</div>
+          `;
+          messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }, 1000);
+      }
+    }
+
+    // Form handling
+    function handleSubmit() {
+      alert('Task submitted successfully! ✅');
+    }
+
+    function handleSkip() {
+      if (confirm('Are you sure you want to skip this task? This action cannot be undone.')) {
+        alert('Task skipped. Loading next task...');
+      }
+    }
+  </script>
+</body>
+</html>
